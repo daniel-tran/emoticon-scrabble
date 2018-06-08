@@ -46,7 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Movment\MovementDirection.cs" />
+    <Compile Include="Core\Movement\MovementDirection.cs" />
+    <Compile Include="Core\Stats\MatchStatistics.cs" />
     <Compile Include="Core\Tile\RackTile.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -54,6 +55,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\Tile\TileBag.cs" />
+    <Compile Include="Core\Tile\TileType.cs" />
     <Compile Include="Core\Validator\WordValidator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,4 +1,5 @@
 ﻿using Scrabble.Core;
+using Scrabble.Core.Stats;
 using Scrabble.Core.Validator;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace Scrabble
         public const int RACK_TILES = 7;
 
         public WordValidator WordValidator { get; set; }
+        public MatchStatistics MatchStatistics { get; set; }
 
         public ScrabbleForm()
         {
@@ -32,6 +34,7 @@ namespace Scrabble
             SetupRack();
 
             this.WordValidator = new WordValidator { ScrabbleForm = this };
+            this.MatchStatistics = new MatchStatistics();
         }
 
         private void SetupTiles()
@@ -55,6 +58,8 @@ namespace Scrabble
                     tile.Font = new Font("Verdana", 15.75F, FontStyle.Regular);
                     tile.Click += Tile_Click;
                     Controls.Add(tile);
+                    tile.SetTileType();
+                    tile.SetRegularBackgroundColour();
 
                     _tiles[x - 1, y - 1] = tile;
                 }
@@ -119,6 +124,7 @@ namespace Scrabble
                 for (int y = 0; y < BOARD_HEIGHT; y++)
                 {
                     _tiles[x, y].TileInPlay = false;
+                    _tiles[x, y].SetRegularBackgroundColour();
                 }
             }
         }
@@ -216,6 +222,8 @@ namespace Scrabble
             {
                 ResetTilesInPlay();
                 FillRack();
+
+                MatchStatistics.Moves += 1;
             }
 
             // Also need to:
@@ -246,9 +254,7 @@ namespace Scrabble
             // Todo: What if you only play one tile but it does join up with something already on the board?
             //       There is a movement direction involved there...
             if (tilesInPlay.Count <= 1)
-            {
                 return MovementDirection.None;
-            }
 
             int xChange = tilesInPlay[1].XLoc - tilesInPlay[0].XLoc;
             int yChange = tilesInPlay[1].YLoc - tilesInPlay[0].YLoc;
@@ -264,7 +270,27 @@ namespace Scrabble
         {
             var tilesInPlay = new List<ScrabbleTile>();
 
+            if (MatchStatistics.Moves == 0)
+            {
+                // On the first move the centre tile needs to be in play.
+                if (!_tiles[(int) BOARD_WIDTH / 2, (int)BOARD_HEIGHT / 2].TileInPlay)
+                {
+                    MessageBox.Show("One of your letters must be on the centre tile for the first move.");
+                    return false;
+                }
+            }
+            else
+            {
+                // Evey move other than the first one, at least one of your tiles needs to be touching an existing tile.
+                if (!ValidateATileIsAdjacent())
+                {
+                    MessageBox.Show("Invalid letter positioning. At least one of your tiles must be adjacent to existing letters");
+                    return false;
+                }
+            }
+
             // Todo: need to ensure this still words when you have a gap in letters you have placed due to using existing letters on the board.
+
             for (int x = 0; x < BOARD_WIDTH; x++)
             {
                 for (int y = 0; y < BOARD_HEIGHT; y++)
@@ -276,9 +302,7 @@ namespace Scrabble
 
             // Only one tile in play so it's valid
             if (tilesInPlay.Count() <= 1)
-            {
                 return true;
-            }
 
             for (int x = 1; x < tilesInPlay.Count; x++)
             {
@@ -299,6 +323,38 @@ namespace Scrabble
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// For all the tiles in play, validate that at least one is adjacent to an existing tile on the board.
+        /// </summary>
+        /// <returns></returns>
+        public bool ValidateATileIsAdjacent()
+        {
+            var adjacentTiles = new List<ScrabbleTile>();
+
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    if (_tiles[x, y].TileInPlay)
+                    {
+                        if (x > 0)
+                            adjacentTiles.Add(_tiles[x - 1, y]);
+
+                        if (x < BOARD_WIDTH - 1)
+                            adjacentTiles.Add(_tiles[x + 1, y]);
+
+                        if (y > 0)
+                            adjacentTiles.Add(_tiles[x, y - 1]);
+
+                        if (y < BOARD_HEIGHT - 1)
+                            adjacentTiles.Add(_tiles[x, y + 1]);
+                    }
+                }
+            }
+
+            return adjacentTiles.Any(t => !t.TileInPlay && !string.IsNullOrEmpty(t.Text));
         }
 
         /// <summary>
@@ -330,6 +386,9 @@ namespace Scrabble
             if (verification == DialogResult.Yes)
             {
                 ResetTilesOnBoardFromTurn();
+
+                MatchStatistics.Passes += 1;
+
                 // Todo: switch to the other player's turn.
             }
         }
@@ -371,6 +430,8 @@ namespace Scrabble
                 // Todo: find out if the rack should be re-filled before the user is assigned some more tiles?
                 // Currently, with this implementation, the user could receive tiles straight back that they have just swapped.
                 FillRack();
+
+                MatchStatistics.Swaps += 1;
 
                 // Todo: switch to the other player's turn.
             }
