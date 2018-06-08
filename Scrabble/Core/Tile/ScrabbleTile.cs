@@ -19,6 +19,7 @@ namespace Scrabble.Core
         {
             this.Text = letter;
             this.BackColor = Color.Goldenrod;
+            this.BackColor = Color.Yellow;
             this.TileInPlay = true;
         }
 

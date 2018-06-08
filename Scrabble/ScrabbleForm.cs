@@ -14,20 +14,24 @@ namespace Scrabble
 {
     public partial class ScrabbleForm : Form
     {
-        private ScrabbleTile[,] _tiles;
-        private List<RackTile> _rackTiles;
-        private TileBag _tileBag;
+        public ScrabbleTile[,] _tiles;
+        public List<RackTile> _rackTiles;
+        public TileBag _tileBag;
 
-        private const int BOARD_WIDTH = 15;
-        private const int BOARD_HEIGHT = 15;
-        private const int TILE_SIZE = 48;
-        private const int RACK_TILES = 7;
+        public const int BOARD_WIDTH = 15;
+        public const int BOARD_HEIGHT = 15;
+        public const int TILE_SIZE = 48;
+        public const int RACK_TILES = 7;
+
+        public WordValidator WordValidator { get; set; }
 
         public ScrabbleForm()
         {
             InitializeComponent();
             SetupTiles();
             SetupRack();
+
+            this.WordValidator = new WordValidator { ScrabbleForm = this };
         }
 
         private void SetupTiles()
@@ -120,28 +124,6 @@ namespace Scrabble
         }
 
         /// <summary>
-        /// Return the word the user is attempting to play.
-        /// </summary>
-        /// <returns></returns>
-        private string GetWordInPlay()
-        {
-            string word = string.Empty;
-
-            for (int x = 0; x < BOARD_WIDTH; x++)
-            {
-                for (int y = 0; y < BOARD_HEIGHT; y++)
-                {
-                    if (_tiles[x, y].TileInPlay)
-                    {
-                        word += _tiles[x, y].Text;
-                    }
-                }
-            }
-
-            return word;
-        }
-
-        /// <summary>
         /// Event handler for when a tile in the player's rack is clicked.
         /// Highlights the tile so you can clearly see it's been selected.
         /// </summary>
@@ -223,12 +205,12 @@ namespace Scrabble
             }
 
             var moveValid = ValidateTilePositions();
-            var validWord = WordValidator.CheckWord(GetWordInPlay());
+            var validWord = WordValidator.ValidateAllWordsInPlay();
             var moveDirection = GetMovementDirection();
 
-            MessageBox.Show(moveValid ? "Tile placements are valid" : "Tile placements are not valid!!!");
-            MessageBox.Show(string.Format("Is {0} valid: {1}", GetWordInPlay(), validWord));
-            MessageBox.Show(string.Format("Move Direction: {0}", moveDirection));
+            //MessageBox.Show(moveValid ? "Tile placements are valid" : "Tile placements are not valid!!!");
+            //MessageBox.Show(string.Format("Is {0} valid: {1}", GetWordInPlay(), validWord));
+            //MessageBox.Show(string.Format("Move Direction: {0}", moveDirection));
 
             if (moveValid && validWord)
             {
@@ -238,8 +220,6 @@ namespace Scrabble
 
             // Also need to:
             // 1) Ensure a tile played is adjacent to an existing letter
-            // 2) Include any tiles already on the board in the word (if they are)
-            // 3) Validate the letters form correct words (in all directions)
             // 4) Total up the points from the move
             // 5) Move to the other person's turn
         }
@@ -284,6 +264,7 @@ namespace Scrabble
         {
             var tilesInPlay = new List<ScrabbleTile>();
 
+            // Todo: need to ensure this still words when you have a gap in letters you have placed due to using existing letters on the board.
             for (int x = 0; x < BOARD_WIDTH; x++)
             {
                 for (int y = 0; y < BOARD_HEIGHT; y++)
