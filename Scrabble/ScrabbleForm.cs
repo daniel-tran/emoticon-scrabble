@@ -175,7 +175,7 @@ namespace Scrabble
         private void Tile_Click(object sender, EventArgs e)
         {
             var tile = (ScrabbleTile) sender;
-            var mea = (MouseEventArgs) e;
+            //var mea = (MouseEventArgs) e;
 
             // Clicked on a tile that they have just put down so move it back to the rack.
             if (tile.TileInPlay)
@@ -224,9 +224,11 @@ namespace Scrabble
 
             var moveValid = ValidateTilePositions();
             var validWord = WordValidator.CheckWord(GetWordInPlay());
+            var moveDirection = GetMovementDirection();
 
             MessageBox.Show(moveValid ? "Tile placements are valid" : "Tile placements are not valid!!!");
             MessageBox.Show(string.Format("Is {0} valid: {1}", GetWordInPlay(), validWord));
+            MessageBox.Show(string.Format("Move Direction: {0}", moveDirection));
 
             if (moveValid && validWord)
             {
@@ -240,6 +242,38 @@ namespace Scrabble
             // 3) Validate the letters form correct words (in all directions)
             // 4) Total up the points from the move
             // 5) Move to the other person's turn
+        }
+
+        /// <summary>
+        /// Return the direction the player is moving on the board with their tiles. 
+        /// Either across, down or none.
+        /// </summary>
+        /// <returns></returns>
+        private MovementDirection GetMovementDirection()
+        {
+            var tilesInPlay = new List<ScrabbleTile>();
+
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    if (_tiles[x, y].TileInPlay)
+                        tilesInPlay.Add(_tiles[x, y]);
+                }
+            }
+
+            // No direction because less than 2 tiles have been played
+            // Todo: What if you only play one tile but it does join up with something already on the board?
+            //       There is a movement direction involved there...
+            if (tilesInPlay.Count <= 1)
+            {
+                return MovementDirection.None;
+            }
+
+            int xChange = tilesInPlay[1].XLoc - tilesInPlay[0].XLoc;
+            int yChange = tilesInPlay[1].YLoc - tilesInPlay[0].YLoc;
+
+            return xChange > 0 ? MovementDirection.Across : yChange > 0 ? MovementDirection.Down : MovementDirection.None;
         }
 
         /// <summary>
@@ -265,13 +299,13 @@ namespace Scrabble
                 return true;
             }
 
-            for (int x = 1; x <tilesInPlay.Count; x++)
+            for (int x = 1; x < tilesInPlay.Count; x++)
             {
-                int xChange = tilesInPlay[x-1].XLoc - tilesInPlay[x].XLoc;
-                int yChange = tilesInPlay[x-1].YLoc - tilesInPlay[x].YLoc;
+                int xChange = tilesInPlay[x - 1].XLoc - tilesInPlay[x].XLoc;
+                int yChange = tilesInPlay[x - 1].YLoc - tilesInPlay[x].YLoc;
 
                 // Moved too much in the X direction
-                if (xChange < -1 || xChange > 1 )
+                if (xChange < -1 || xChange > 1)
                     return false;
 
                 // Moved too much in the Y direction
@@ -286,9 +320,79 @@ namespace Scrabble
             return true;
         }
 
+        /// <summary>
+        /// Resets any tiles that the user had attempted to put down on the board.
+        /// This should be called to clean up the board before allowing the user to do actions such
+        /// as swap their letters or pass their turn.
+        /// </summary>
+        private void ResetTilesOnBoardFromTurn()
+        {
+            // Reset any tiles the player had put on the board
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    if (_tiles[x, y].TileInPlay)
+                        _tiles[x, y].PerformClick();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the event when the user wants to pass their turn.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnPass_Click(object sender, EventArgs e)
         {
+            var verification = MessageBox.Show("Do you really want to pass your turn?", "Pass your turn", MessageBoxButtons.YesNo);
+            if (verification == DialogResult.Yes)
+            {
+                ResetTilesOnBoardFromTurn();
+                // Todo: switch to the other player's turn.
+            }
+        }
 
+        /// <summary>
+        /// Handles allowing the user to swap their tiles.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSwap_Click(object sender, EventArgs e)
+        {
+            ResetTilesOnBoardFromTurn();
+
+            var verification = MessageBox.Show("Do you really want to swap the tiles you have selected?", "Swap your letters", MessageBoxButtons.YesNo);
+            if (verification == DialogResult.Yes)
+            {
+
+                var tiles = _rackTiles.Where(c => c.LetterSelected).ToList();
+
+                // Trying to swap no letters at all.
+                if (tiles.Count == 0)
+                {
+                    MessageBox.Show("You must select at least one letter from your rack to swap.");
+                    return;
+                }
+
+                // Trying to swap more letters than are left in the bag
+                if (tiles.Count > _tileBag.LetterCountRemaining())
+                {
+                    MessageBox.Show($"You can only swap {_tileBag.LetterCountRemaining()} letter(s) or less.");
+                    return;
+                }
+
+                tiles.ForEach(t => {
+                    _tileBag.GiveLetter(t.Text[0]);
+                    t.ClearDisplay();
+                });
+
+                // Todo: find out if the rack should be re-filled before the user is assigned some more tiles?
+                // Currently, with this implementation, the user could receive tiles straight back that they have just swapped.
+                FillRack();
+
+                // Todo: switch to the other player's turn.
+            }
         }
     }
 }

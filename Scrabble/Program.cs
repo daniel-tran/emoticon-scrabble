@@ -16,7 +16,7 @@ namespace Scrabble
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ScrabbleFormDynamic());
+            Application.Run(new ScrabbleForm());
         }
     }
 }

@@ -27,6 +27,23 @@ namespace Scrabble.Core
             }
         }
 
+        /// <summary>
+        /// Returns how many letters are left in the rack.
+        /// </summary>
+        public int LetterCountRemaining()
+        {
+            return this.Letters.Values.Sum();
+        }
+
+        /// <summary>
+        /// Give a letter back to the bag. This would be triggered when a user swaps a tile.
+        /// </summary>
+        /// <param name="letter"></param>
+        public void GiveLetter(char letter)
+        {
+            this.Letters[letter] += 1;
+        }
+
         public string TakeLetters(int numLetters)
         {
             var letters = "";
