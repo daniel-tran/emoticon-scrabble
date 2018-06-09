@@ -47,8 +47,17 @@ namespace Scrabble.Core
                 case TileType.Center:
                     this.BackColor = Color.Purple;
                     break;
+                case TileType.TripleLetter:
+                    this.BackColor = Color.ForestGreen;
+                    break;
                 case TileType.TripleWord:
                     this.BackColor = Color.Orange;
+                    break;
+                case TileType.DoubleLetter:
+                    this.BackColor = Color.RoyalBlue;
+                    break;
+                case TileType.DoubleWord:
+                    this.BackColor = Color.OrangeRed;
                     break;
                 default:
                     this.BackColor = SystemColors.ButtonFace;
@@ -60,23 +69,6 @@ namespace Scrabble.Core
 
             if (this.TileInPlay)
                 this.BackColor = Color.Yellow;
-        }
-
-        public void SetTileType()
-        {
-            // Todo: don't hardcode these in, need a smarter way to be able to define them
-
-            if (XLoc == 7 && YLoc == 7)
-                this.TileType = TileType.Center;
-
-            else if ((XLoc == 0 || XLoc == 14) && (YLoc == 3 || YLoc == 11))
-                this.TileType = TileType.TripleWord;
-
-            else if((YLoc == 0 || YLoc == 14) && (XLoc == 3 || XLoc == 11))
-                this.TileType = TileType.TripleWord;
-
-            else
-                this.TileType = TileType.Regular;
         }
     }
 }

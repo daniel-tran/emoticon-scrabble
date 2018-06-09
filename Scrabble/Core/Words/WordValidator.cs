@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Scrabble.Core.Movement;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Scrabble.Core.Validator
+namespace Scrabble.Core.Words
 {
     public class WordValidator
     {
@@ -39,36 +40,36 @@ namespace Scrabble.Core.Validator
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        public bool CheckWord(string word)
+        public bool CheckWord(Word word)
         {
             if (ValidWords == null || !ValidWords.Any())
-            {
                 LoadWords();
-            }
 
             // Todo: maybe not all 1 length words should be valid???
-            if (word.Length == 1)
+            if (word.Text.Length == 1)
                 return true;
 
-            return ValidWords.FirstOrDefault(w => w == word) != null;
+            return ValidWords.FirstOrDefault(w => w == word.Text) != null;
         }
 
         /// <summary>
         /// Validate all the words on the board.
         /// </summary>
         /// <returns></returns>
-        public bool ValidateAllWordsInPlay()
+        public MoveResult ValidateAllWordsInPlay()
         {
-            var words = new List<string>();
+            var words = new List<Word>();
 
             for (int x = 0; x < ScrabbleForm.BOARD_WIDTH; x++)
             {
                 for (int y = 0; y < ScrabbleForm.BOARD_HEIGHT; y++)
                 {
-                    if (!string.IsNullOrEmpty(ScrabbleForm._tiles[x, y].Text))
+                    if (!string.IsNullOrEmpty(ScrabbleForm.TileManager.Tiles[x, y].Text) && ScrabbleForm.TileManager.Tiles[x, y].TileInPlay)
                     {
                         foreach (var w in GetSurroundingWords(x, y))
                         {
+                            // Todo: need to allow duplicated words if the word actually has been played twice
+                            // Think this is sorted, just need to test it.
                             if (!words.Contains(w))
                                 words.Add(w);
                         }
@@ -78,11 +79,43 @@ namespace Scrabble.Core.Validator
 
             foreach (var w in words)
             {
+                w.Tiles = GetWordTiles(w);
+                w.Score = WordScorer.ScoreWord(w);
                 MessageBox.Show($"{w} valid: {CheckWord(w)}");
             }
 
-            return words.All(w => CheckWord(w));
+            return new MoveResult {
+                TotalScore = words.Sum(w => w.Score),
+                Words = words,
+                Valid = words.All(w => CheckWord(w))
+            };
         }
+
+        /// <summary>
+        /// Get the tiles from the game board that a word has been played on.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public List<ScrabbleTile> GetWordTiles(Word word)
+        {
+            var tiles = new List<ScrabbleTile>();
+
+            if (word.StartX != word.EndX)
+            {
+                // Word is played horizontally
+                for (var x = word.StartX; x <= word.EndX; x++)
+                    tiles.Add(ScrabbleForm.TileManager.Tiles[x, word.StartY]);
+            }
+            else
+            {
+                // Word is played vertically
+                for (var y = word.StartY; y <= word.EndY; y++)
+                    tiles.Add(ScrabbleForm.TileManager.Tiles[word.StartX, y]);
+            }
+
+            return tiles;
+        }
+
 
         /// <summary>
         /// Traverse the board horizontally and vertically from a given point (x, y)
@@ -92,42 +125,60 @@ namespace Scrabble.Core.Validator
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public List<string> GetSurroundingWords(int x, int y)
+        public List<Word> GetSurroundingWords(int x, int y)
         {
-            var words = new List<string>();
+            var words = new List<Word>();
 
             string horizontal = string.Empty;
             string vertical = string.Empty;
 
             // Start/End location for the horizonal word
             var tx = x;
-            while (tx >= 0 && !string.IsNullOrEmpty(ScrabbleForm._tiles[tx, y].Text))
+            while (tx >= 0 && !string.IsNullOrEmpty(ScrabbleForm.TileManager.Tiles[tx, y].Text))
                 tx -= 1;
+            tx += 1;
 
             var tx2 = x;
-            while (tx2 < ScrabbleForm.BOARD_WIDTH && !string.IsNullOrEmpty(ScrabbleForm._tiles[tx2, y].Text))
+            while (tx2 < ScrabbleForm.BOARD_WIDTH && !string.IsNullOrEmpty(ScrabbleForm.TileManager.Tiles[tx2, y].Text))
                 tx2 += 1;
+            tx2 -= 1;
 
             for (var i = Math.Max(tx, 0); i <= Math.Min(tx2, ScrabbleForm.BOARD_WIDTH - 1); i++)
-                horizontal += ScrabbleForm._tiles[i, y].Text;
+                horizontal += ScrabbleForm.TileManager.Tiles[i, y].Text;
 
             // Start/End location for the vertical word
             var ty = y;
-            while (ty >= 0 && !string.IsNullOrEmpty(ScrabbleForm._tiles[x, ty].Text))
+            while (ty >= 0 && !string.IsNullOrEmpty(ScrabbleForm.TileManager.Tiles[x, ty].Text))
                 ty -= 1;
+            ty += 1;
 
             var ty2 = y;
-            while (ty2 < ScrabbleForm.BOARD_WIDTH && !string.IsNullOrEmpty(ScrabbleForm._tiles[x, ty2].Text))
+            while (ty2 < ScrabbleForm.BOARD_WIDTH && !string.IsNullOrEmpty(ScrabbleForm.TileManager.Tiles[x, ty2].Text))
                 ty2 += 1;
+            ty2 -= 1;
 
             for (var i = Math.Max(ty, 0); i <= Math.Min(ty2, ScrabbleForm.BOARD_HEIGHT - 1); i++)
-                vertical += ScrabbleForm._tiles[x, i].Text;
+                vertical += ScrabbleForm.TileManager.Tiles[x, i].Text;
 
             if (!string.IsNullOrEmpty(horizontal) && horizontal.Length > 1)
-                words.Add(horizontal);
+                words.Add(new Word
+                {
+                    StartX = tx,
+                    EndX = tx2,
+                    StartY = y,
+                    EndY = y,
+                    Text = horizontal
+                });
 
             if (!string.IsNullOrEmpty(vertical) && vertical.Length > 1)
-                words.Add(vertical);
+                words.Add(new Word
+                {
+                    StartX = x,
+                    EndX = x,
+                    StartY = ty,
+                    EndY = ty2,
+                    Text = vertical
+                });
 
             return words;
         }

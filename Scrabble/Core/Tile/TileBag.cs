@@ -8,7 +8,8 @@ namespace Scrabble.Core
 {
     public class TileBag
     {
-        public Dictionary<char, int> Letters { get; set; }
+        //public Dictionary<char, int> Letters { get; set; }
+        public List<char> Letters { get; set; }
 
         public TileBag()
         {
@@ -20,11 +21,16 @@ namespace Scrabble.Core
         /// </summary>
         public void SetupBag()
         {
-            Letters = new Dictionary<char, int>();
+            Letters = new List<char>();
             for (char c = 'A'; c <= 'Z'; c++)
             {
-                Letters[c] = LetterCount(c);
+                for (int x =0; x < LetterCount(c); x++)
+                {
+                    this.Letters.Add(c);
+                }
             }
+
+            this.Letters = this.Letters.OrderBy(l => new Guid()).ToList();
         }
 
         /// <summary>
@@ -32,7 +38,7 @@ namespace Scrabble.Core
         /// </summary>
         public int LetterCountRemaining()
         {
-            return this.Letters.Values.Sum();
+            return this.Letters.Count;
         }
 
         /// <summary>
@@ -41,7 +47,7 @@ namespace Scrabble.Core
         /// <param name="letter"></param>
         public void GiveLetter(char letter)
         {
-            this.Letters[letter] += 1;
+            this.Letters.Add(letter);
         }
 
         public string TakeLetters(int numLetters)
@@ -52,16 +58,12 @@ namespace Scrabble.Core
             while (letters.Length < numLetters)
             {
                 // Ran out of letters
-                if (!Letters.Values.Where(v => v > 0).Any())
+                if (Letters.Count == 0)
                     break;
 
-                // Take a random character from the tilebag.
-                var randChar = (char)random.Next('A', 'Z' + 1);
-                if (Letters[randChar] > 0)
-                {
-                    letters += randChar;
-                    Letters[randChar] -= 1;
-                }
+                var randomLetter = this.Letters[random.Next(0, this.Letters.Count)];
+                letters += randomLetter;
+                this.Letters.Remove(randomLetter);
             }
 
             return letters;
@@ -77,52 +79,16 @@ namespace Scrabble.Core
         {
             var timesMapping = new Dictionary<char, int>()
             {
-                { 'E', 12 }, { 'A', 9 }, { 'I', 9 }, { 'O', 8 },
-                { 'N', 6 }, { 'R', 6 }, { 'T', 6 }, { 'L', 4  },
-                { 'S', 4 }, { 'U', 4 }, { 'D', 4 }, { 'G', 3 },
+                { 'E', 13 }, { 'A', 9 }, { 'I', 8 }, { 'O', 8 },
+                { 'N', 5 }, { 'R', 6 }, { 'T', 7 }, { 'L', 4  },
+                { 'S', 5 }, { 'U', 4 }, { 'D', 5 }, { 'G', 3 },
                 { 'B', 2 }, { 'C', 2 }, { 'M', 2 }, { 'P', 2 },
-                { 'F', 2 }, { 'H', 2 }, { 'V', 2 }, { 'W', 2 },
+                { 'F', 2 }, { 'H', 4 }, { 'V', 2 }, { 'W', 2 },
                 { 'Y', 2 }, { 'K', 1 }, { 'J', 1 }, { 'X', 1 },
                 { 'Q', 1 }, { 'Z', 1 },
             };
 
             return timesMapping[c];
-        }
-
-        /// <summary>
-        /// How many points is a provided character worth?
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public int LetterValue(char c)
-        {
-            var scoreMapping = new Dictionary<char, int>()
-            {
-                // One point
-                { 'E', 1 }, { 'A', 1 }, { 'I', 1 }, { 'O', 1 },
-                { 'N', 1 }, { 'R', 1 }, { 'T', 1 }, { 'L', 1 },
-                { 'S', 1 }, { 'U', 1 },
-
-                // Two points
-                { 'D', 2 }, { 'G', 2 },
-
-                // Three points
-                { 'B', 3 }, { 'C', 3 }, { 'M', 3 }, { 'P', 3 },
-
-                // Four points
-                { 'F', 4 }, { 'H', 4 }, { 'V', 4 }, { 'W', 4 }, { 'Y', 4 },
-
-                // Five points
-                { 'K', 5 },
-
-                // Eight points
-                { 'J', 8 }, { 'X', 8 },
-
-                // Ten pints
-                { 'Q', 10 }, { 'Z', 10 },
-            };
-
-            return scoreMapping[c];
         }
 
     }

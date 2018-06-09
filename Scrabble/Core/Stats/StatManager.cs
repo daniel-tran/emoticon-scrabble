@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scrabble.Core.Stats
 {
-    public class MatchStatistics
+    public class StatManager
     {
         public int Moves { get; set; }
 
