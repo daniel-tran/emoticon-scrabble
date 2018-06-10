@@ -81,13 +81,15 @@ namespace Scrabble.Core.Words
             {
                 w.Tiles = GetWordTiles(w);
                 w.Score = WordScorer.ScoreWord(w);
-                MessageBox.Show($"{w} valid: {CheckWord(w)}");
+                w.Valid = CheckWord(w);
+                w.SetValidHighlight();
+                //MessageBox.Show($"{w} valid: {w.Valid}");
             }
 
             return new MoveResult {
                 TotalScore = words.Sum(w => w.Score),
                 Words = words,
-                Valid = words.All(w => CheckWord(w))
+                Valid = words.All(w => w.Valid)
             };
         }
 

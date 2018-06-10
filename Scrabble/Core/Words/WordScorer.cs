@@ -14,6 +14,12 @@ namespace Scrabble.Core.Words
     {
         private static TileType[,] _tilePositions;
 
+        /// <summary>
+        /// Get the total score for a word. Use's the words location on the board to appropriately apply
+        /// word modifiers such as Double Word, Triple Letter etc...
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public static int ScoreWord(Word word)
         {
             if (_tilePositions == null)
@@ -33,19 +39,19 @@ namespace Scrabble.Core.Words
                     switch (tile.TileType)
                     {
                         case TileType.TripleLetter:
-                            MessageBox.Show($"{tile.Text[0]} is on a TL!");
+                            //MessageBox.Show($"{tile.Text[0]} is on a TL!");
                             tileScore *= 3;
                             break;
                         case TileType.TripleWord:
-                            MessageBox.Show($"{tile.Text[0]} has triggerd a TW!");
+                            //MessageBox.Show($"{tile.Text[0]} has triggerd a TW!");
                             tripleWordModifer = true;
                             break;
                         case TileType.DoubleLetter:
-                            MessageBox.Show($"{tile.Text[0]} is on a DL!");
+                            //MessageBox.Show($"{tile.Text[0]} is on a DL!");
                             tileScore *= 2;
                             break;
                         case TileType.DoubleWord:
-                            MessageBox.Show($"{tile.Text[0]} has triggerd a DW!");
+                            //MessageBox.Show($"{tile.Text[0]} has triggerd a DW!");
                             doubleWordModifier = true;
                             break;
                         default:
@@ -98,22 +104,22 @@ namespace Scrabble.Core.Words
                     switch (tp.Trim())
                     {
                         case "RE":
-                            _tilePositions[col, row] = TileType.Regular;
-                            break;
-                        case "TW":
-                            _tilePositions[col, row] = TileType.TripleWord;
-                            break;
-                        case "TL":
-                            _tilePositions[col, row] = TileType.TripleLetter;
-                            break;
-                        case "DL":
-                            _tilePositions[col, row] = TileType.DoubleLetter;
+                            _tilePositions[row, col] = TileType.Regular;
                             break;
                         case "CE":
-                            _tilePositions[col, row] = TileType.Center;
+                            _tilePositions[row, col] = TileType.Center;
+                            break;
+                        case "TW":
+                            _tilePositions[row, col] = TileType.TripleWord;
+                            break;
+                        case "TL":
+                            _tilePositions[row, col] = TileType.TripleLetter;
                             break;
                         case "DW":
-                            _tilePositions[col, row] = TileType.DoubleWord;
+                            _tilePositions[row, col] = TileType.DoubleWord;
+                            break;
+                        case "DL":
+                            _tilePositions[row, col] = TileType.DoubleLetter;
                             break;
                         default:
                             throw new Exception($"Unknown tile type in inital_board file: {tp}");

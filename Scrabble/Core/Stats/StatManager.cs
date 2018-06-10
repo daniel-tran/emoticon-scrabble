@@ -14,6 +14,7 @@ namespace Scrabble.Core.Stats
 
         public int Swaps { get; set; }
 
+        // Todo: need to set these and present them somewhere (menu or end of game??)
         public int HighestScoringWordScore { get; set; }
 
         public string HighestScoringWord { get; set; }

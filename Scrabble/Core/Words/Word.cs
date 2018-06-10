@@ -15,6 +15,19 @@ namespace Scrabble.Core.Words
         public int Score { get; set; }
         public string Text { get; set; }
         public List<ScrabbleTile> Tiles { get; set; }
+        public bool Valid { get; set; }
+
+        public void SetValidHighlight()
+        {
+            foreach (var t in Tiles)
+                t.OnHighlight(Valid);
+        }
+
+        public void ClearValidHighlight()
+        {
+            foreach (var t in Tiles)
+                t.ClearHighlight();
+        }
 
         public override string ToString()
         {

@@ -30,7 +30,6 @@ namespace Scrabble
         public PlayerManager PlayerManager { get; set; }
         public GameLog Logger { get; set; }
 
-
         public ScrabbleForm()
         {
             InitializeComponent();

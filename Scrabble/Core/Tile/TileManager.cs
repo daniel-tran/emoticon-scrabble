@@ -62,6 +62,24 @@ namespace Scrabble.Core.Tile
                     Tiles[x, y].SetRegularBackgroundColour();
                 }
             }
+
+            ClearTileHighlights();
+        }
+
+        /// <summary>
+        /// Reset any tile highlighting on the board
+        /// </summary>
+        public void ClearTileHighlights()
+        {
+            for (int x = 0; x < ScrabbleForm.BOARD_WIDTH; x++)
+            {
+                for (int y = 0; y < ScrabbleForm.BOARD_HEIGHT; y++)
+                {
+                    Tiles[x, y].ClearHighlight();
+                }
+            }
+
+            ScrabbleForm.btnPlay.Text = "Play";
         }
 
         /// <summary>
@@ -217,6 +235,8 @@ namespace Scrabble.Core.Tile
         {
             var tile = (ScrabbleTile) sender;
 
+            ClearTileHighlights();
+
             // Clicked on a tile that they have just put down so move it back to the rack.
             if (tile.TileInPlay)
             {
@@ -229,6 +249,10 @@ namespace Scrabble.Core.Tile
 
                         // Reset the scrabble tile
                         tile.OnLetterRemoved();
+
+                        // Highlight on the remaining tiles if there are any valid words.
+                        var mr = ScrabbleForm.WordValidator.ValidateAllWordsInPlay();
+                        ScrabbleForm.btnPlay.Text = $"Play {mr.TotalScore} pts";
                         return;
                     }
                 }
@@ -249,6 +273,9 @@ namespace Scrabble.Core.Tile
                     break;
                 }
             }
+
+            var moveResult = ScrabbleForm.WordValidator.ValidateAllWordsInPlay();
+            ScrabbleForm.btnPlay.Text = $"Play {moveResult.TotalScore} pts";
         }
     }
 }

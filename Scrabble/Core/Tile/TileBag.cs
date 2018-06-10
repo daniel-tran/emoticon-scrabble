@@ -8,12 +8,11 @@ namespace Scrabble.Core
 {
     public class TileBag
     {
-        //public Dictionary<char, int> Letters { get; set; }
         public List<char> Letters { get; set; }
 
         public TileBag()
         {
-            this.SetupBag();
+            SetupBag();
         }
 
         /// <summary>
@@ -24,13 +23,13 @@ namespace Scrabble.Core
             Letters = new List<char>();
             for (char c = 'A'; c <= 'Z'; c++)
             {
-                for (int x =0; x < LetterCount(c); x++)
+                for (int x = 0; x < LetterCount(c); x++)
                 {
                     this.Letters.Add(c);
                 }
             }
 
-            this.Letters = this.Letters.OrderBy(l => new Guid()).ToList();
+            Letters = Letters.OrderBy(l => Guid.NewGuid()).ToList();
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace Scrabble.Core
         /// </summary>
         public int LetterCountRemaining()
         {
-            return this.Letters.Count;
+            return Letters.Count;
         }
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace Scrabble.Core
         /// <param name="letter"></param>
         public void GiveLetter(char letter)
         {
-            this.Letters.Add(letter);
+            Letters.Add(letter);
         }
 
         public string TakeLetters(int numLetters)
@@ -61,9 +60,9 @@ namespace Scrabble.Core
                 if (Letters.Count == 0)
                     break;
 
-                var randomLetter = this.Letters[random.Next(0, this.Letters.Count)];
+                var randomLetter = Letters[random.Next(0, Letters.Count)];
                 letters += randomLetter;
-                this.Letters.Remove(randomLetter);
+                Letters.Remove(randomLetter);
             }
 
             return letters;
@@ -90,6 +89,5 @@ namespace Scrabble.Core
 
             return timesMapping[c];
         }
-
     }
 }

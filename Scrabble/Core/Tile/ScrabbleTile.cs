@@ -32,9 +32,16 @@ namespace Scrabble.Core
             SetRegularBackgroundColour();
         }
 
-        public string GetLocation()
+        public void OnHighlight(bool valid)
         {
-            return string.Format("{0}, {1}", XLoc, YLoc);
+            this.FlatStyle = FlatStyle.Flat;
+            this.FlatAppearance.BorderColor = valid ? Color.LimeGreen : Color.DarkRed;
+            this.FlatAppearance.BorderSize = 5;
+        }
+
+        public void ClearHighlight()
+        {
+            this.FlatStyle = FlatStyle.Standard;
         }
 
         public void SetRegularBackgroundColour()
@@ -47,17 +54,17 @@ namespace Scrabble.Core
                 case TileType.Center:
                     this.BackColor = Color.Purple;
                     break;
-                case TileType.TripleLetter:
-                    this.BackColor = Color.ForestGreen;
-                    break;
                 case TileType.TripleWord:
                     this.BackColor = Color.Orange;
                     break;
-                case TileType.DoubleLetter:
-                    this.BackColor = Color.RoyalBlue;
+                case TileType.TripleLetter:
+                    this.BackColor = Color.ForestGreen;
                     break;
                 case TileType.DoubleWord:
                     this.BackColor = Color.OrangeRed;
+                    break;
+                case TileType.DoubleLetter:
+                    this.BackColor = Color.RoyalBlue;
                     break;
                 default:
                     this.BackColor = SystemColors.ButtonFace;

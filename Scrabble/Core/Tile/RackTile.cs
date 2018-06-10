@@ -24,7 +24,7 @@ namespace Scrabble.Core
         public void OnLetterSelected()
         {
             this.FlatStyle = FlatStyle.Flat;
-            this.FlatAppearance.BorderColor = Color.Green;
+            this.FlatAppearance.BorderColor = Color.LimeGreen;
             this.FlatAppearance.BorderSize = 5;
             this.LetterSelected = true;
         }
