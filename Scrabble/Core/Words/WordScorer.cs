@@ -73,6 +73,17 @@ namespace Scrabble.Core.Words
         }
 
         /// <summary>
+        /// Get the "raw" score of a word, i.e that is just the score of the letters in the word,
+        /// this will not use the position of the board to apply triple/double modifiers etc.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public static int RawWordScore(string word)
+        {
+            return word.Sum(c => LetterValue(c));
+        }
+
+        /// <summary>
         /// Get the locations of the different types of tiles on the board.
         /// </summary>
         /// <returns></returns>

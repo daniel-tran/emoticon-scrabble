@@ -71,12 +71,33 @@ namespace Scrabble.Core.Tile
         /// <param name="e"></param>
         private void RackTile_Click(object sender, EventArgs e)
         {
+            if (!ScrabbleForm.GamePlaying) return;
+
             var tile = (RackTile) sender;
             var alreadySelected = tile.LetterSelected;
 
             // Reset the selected display of all tiles.
             foreach (var t in ScrabbleForm.PlayerManager.CurrentPlayer.Tiles)
+            {
                 tile.OnLetterDeselected();
+
+                //if (t.LetterSelected)
+                //{
+                //    // Another tile was selected so swap them around, allows reordering of the rack.
+                //    // Todo: this has broken the ability to swap letters
+                //    var tmpLetter = tile.Letter;
+                //    var tmpText = tile.Text;
+
+                //    tile.Letter = t.Letter;
+                //    tile.Text = t.Text;
+
+                //    t.Letter = tmpLetter;
+                //    t.Text = tmpText;
+
+                //    //ScrabbleForm.PlayerManager.CurrentPlayer.Tiles.ForEach(rt => rt.OnLetterDeselected());
+                //    //return;
+                //}
+            }
 
             // If it wasn't already selected (e.g you're now de-selecting it)
             // then apply the "selected" styling to the button.

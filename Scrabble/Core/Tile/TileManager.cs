@@ -233,9 +233,13 @@ namespace Scrabble.Core.Tile
         /// <param name="e"></param>
         public void Tile_Click(object sender, EventArgs e)
         {
+            if (!ScrabbleForm.GamePlaying) return;
+
             var tile = (ScrabbleTile) sender;
 
             ClearTileHighlights();
+
+            Console.WriteLine("Clicking a tile!");
 
             // Clicked on a tile that they have just put down so move it back to the rack.
             if (tile.TileInPlay)
@@ -262,7 +266,7 @@ namespace Scrabble.Core.Tile
             if (!string.IsNullOrEmpty(tile.Text))
                 return;
 
-            // All is good - handle placing the tile on th board from the rack.
+            // All is good - handle placing the tile on the board from the rack.
             foreach (var t in ScrabbleForm.PlayerManager.CurrentPlayer.Tiles)
             {
                 if (t.LetterSelected)

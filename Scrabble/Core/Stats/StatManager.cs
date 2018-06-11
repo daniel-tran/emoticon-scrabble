@@ -19,5 +19,7 @@ namespace Scrabble.Core.Stats
 
         public string HighestScoringWord { get; set; }
 
+        public int ConsecutivePasses { get; set; }
+
     }
 }
