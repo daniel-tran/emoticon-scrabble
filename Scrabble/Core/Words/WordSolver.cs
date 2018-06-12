@@ -42,14 +42,17 @@ namespace Scrabble.Core.Words
                         if (horizontal != null && !words.Contains(horizontal))
                             words.Add(horizontal);
                     }
+                    else
+                    {
+                        var word = new Word
+                        {
+                            Text = w,
+                            Score = WordScorer.RawWordScore(w)
+                        };
 
-                    //var word = new Word {
-                    //    Text = w,
-                    //    Score = WordScorer.RawWordScore(w)
-                    //};
-
-                    //if (!words.Contains(word))
-                    //    words.Add(word);
+                        if (!words.Contains(word))
+                            words.Add(word);
+                    }
                 }
             }
 

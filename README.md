@@ -10,4 +10,4 @@ The majority of the game has been implemented, but there is still a little work 
 + Live score calculations showing the score that would be accquired
 + Configurable game board layout (by default based on Words with Friends layout)
 
-![Scrabble Game](https://i.imgur.com/7W3f4qg.png "Scrabble Game")
+![Scrabble Game](https://i.imgur.com/FCCuUHt.png "Scrabble Game")

@@ -43,13 +43,17 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblTripleWord = new System.Windows.Forms.Label();
+            this.btnHint = new System.Windows.Forms.Button();
+            this.lblScrabble = new System.Windows.Forms.Label();
+            this.btnExit = new System.Windows.Forms.Button();
             this.groupBoxPlayers.SuspendLayout();
             this.groupTiles.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnPlay
             // 
-            this.btnPlay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.btnPlay.BackColor = System.Drawing.Color.Silver;
+            this.btnPlay.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPlay.Location = new System.Drawing.Point(700, 830);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(98, 45);
@@ -60,7 +64,8 @@
             // 
             // btnPass
             // 
-            this.btnPass.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.btnPass.BackColor = System.Drawing.Color.Silver;
+            this.btnPass.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPass.Location = new System.Drawing.Point(49, 830);
             this.btnPass.Name = "btnPass";
             this.btnPass.Size = new System.Drawing.Size(98, 45);
@@ -71,7 +76,8 @@
             // 
             // btnSwap
             // 
-            this.btnSwap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnSwap.BackColor = System.Drawing.Color.Silver;
+            this.btnSwap.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSwap.Location = new System.Drawing.Point(49, 881);
             this.btnSwap.Name = "btnSwap";
             this.btnSwap.Size = new System.Drawing.Size(98, 45);
@@ -134,11 +140,12 @@
             // 
             // btnLetters
             // 
-            this.btnLetters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.btnLetters.BackColor = System.Drawing.Color.Silver;
+            this.btnLetters.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLetters.ForeColor = System.Drawing.Color.Black;
-            this.btnLetters.Location = new System.Drawing.Point(700, 881);
+            this.btnLetters.Location = new System.Drawing.Point(311, 884);
             this.btnLetters.Name = "btnLetters";
-            this.btnLetters.Size = new System.Drawing.Size(98, 45);
+            this.btnLetters.Size = new System.Drawing.Size(193, 38);
             this.btnLetters.TabIndex = 6;
             this.btnLetters.Text = "Letters Remaining";
             this.btnLetters.UseVisualStyleBackColor = false;
@@ -223,12 +230,49 @@
             this.lblTripleWord.TabIndex = 0;
             this.lblTripleWord.Text = "Triple Word";
             // 
+            // btnHint
+            // 
+            this.btnHint.BackColor = System.Drawing.Color.Silver;
+            this.btnHint.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHint.Location = new System.Drawing.Point(700, 881);
+            this.btnHint.Name = "btnHint";
+            this.btnHint.Size = new System.Drawing.Size(98, 45);
+            this.btnHint.TabIndex = 8;
+            this.btnHint.Text = "Hint";
+            this.btnHint.UseVisualStyleBackColor = false;
+            this.btnHint.Click += new System.EventHandler(this.btnHint_Click);
+            // 
+            // lblScrabble
+            // 
+            this.lblScrabble.AutoSize = true;
+            this.lblScrabble.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblScrabble.Location = new System.Drawing.Point(47, 9);
+            this.lblScrabble.Name = "lblScrabble";
+            this.lblScrabble.Size = new System.Drawing.Size(273, 29);
+            this.lblScrabble.TabIndex = 9;
+            this.lblScrabble.Text = "Welcome to Scrabble!";
+            // 
+            // btnExit
+            // 
+            this.btnExit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.btnExit.ForeColor = System.Drawing.Color.White;
+            this.btnExit.Location = new System.Drawing.Point(723, 17);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(75, 23);
+            this.btnExit.TabIndex = 10;
+            this.btnExit.Text = "Exit";
+            this.btnExit.UseVisualStyleBackColor = false;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
             // ScrabbleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1186, 943);
+            this.Controls.Add(this.btnExit);
+            this.Controls.Add(this.lblScrabble);
+            this.Controls.Add(this.btnHint);
             this.Controls.Add(this.groupTiles);
             this.Controls.Add(this.btnLetters);
             this.Controls.Add(this.groupBoxPlayers);
@@ -265,5 +309,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Button btnHint;
+        private System.Windows.Forms.Label lblScrabble;
+        private System.Windows.Forms.Button btnExit;
     }
 }

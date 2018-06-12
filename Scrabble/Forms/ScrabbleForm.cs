@@ -37,6 +37,7 @@ namespace Scrabble
         public ScrabbleForm()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.None;
 
             this.TileManager = new TileManager { ScrabbleForm = this };
             TileManager.SetupTiles();
@@ -51,6 +52,23 @@ namespace Scrabble
             PlayerManager.SetupPlayers();
 
             this.GamePlaying = true;
+            btnLetters.Text = $"{TileManager.TileBag.LetterCountRemaining()} Letters Remaining";
+        }
+
+        private const int WM_NCHITTEST = 0x84;
+        private const int HTCLIENT = 0x1;
+        private const int HTCAPTION = 0x2;
+
+        /// <summary>
+        /// Handling the window messages, still allowing the form to be dragged without the title bar.
+        /// </summary>
+        /// <param name="message"></param>
+        protected override void WndProc(ref Message message)
+        {
+            base.WndProc(ref message);
+
+            if (message.Msg == WM_NCHITTEST && (int) message.Result == HTCLIENT)
+                message.Result = (IntPtr) HTCAPTION;
         }
 
         /// <summary>
@@ -79,7 +97,7 @@ namespace Scrabble
             var tilesPlayed = PlayerManager.CurrentPlayer.Tiles.Where(r => string.IsNullOrEmpty(r.Text)).Count();
             if (tilesPlayed == 0)
             {
-                MessageBox.Show("You must place some tiles on the board and make a word to play. You can pass if cannot make a word.");
+                MessageBox.Show("You must place some tiles on the board and make a word to play. You can pass or swap your letters if cannot make a word. You can use the hint to see available words in your rack.");
                 return;
             }
 
@@ -193,6 +211,34 @@ namespace Scrabble
             var letterForm = new LettersForm { ScrabbleForm = this };
             letterForm.BindLetters();
             letterForm.Show();
+        }
+
+        /// <summary>
+        /// Provides a hint to the player, will show all available anagrams for the letters
+        /// in their rack.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnHint_Click(object sender, EventArgs e)
+        {
+            var anagrams = WordSolver.Anagrams(PlayerManager.CurrentPlayer.Tiles, null);
+            var hintText = "With the tiles in your rack you can make the following words:";
+            anagrams.ForEach(a => hintText += $"\n{a.Text} ({a.Score})");
+
+            MessageBox.Show(hintText, "Word Hint", MessageBoxButtons.OK);
+        }
+
+        /// <summary>
+        /// Handles closing the game.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            var verification = MessageBox.Show("Do you really want to exit? You will lose any game progress.", "Exit", MessageBoxButtons.YesNo);
+
+            if (verification == DialogResult.Yes)
+                Application.Exit();
         }
 
         //private void ImplementComputerLogicHere()

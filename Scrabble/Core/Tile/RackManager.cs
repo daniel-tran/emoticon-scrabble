@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Scrabble.Core.Tile
 {
@@ -28,6 +29,7 @@ namespace Scrabble.Core.Tile
                 tile.UseVisualStyleBackColor = false;
                 tile.ForeColor = Color.Black;
                 tile.Font = new Font("Verdana", 15.75F, FontStyle.Regular);
+                tile.TextAlign = ContentAlignment.MiddleCenter;
                 tile.Click += RackTile_Click;
                 tile.Visible = false;
                 ScrabbleForm.Controls.Add(tile);
