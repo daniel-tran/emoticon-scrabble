@@ -87,30 +87,28 @@ namespace Scrabble.Core.Tile
         /// Either across, down or none.
         /// </summary>
         /// <returns></returns>
-        //public MovementDirection GetMovementDirection()
-        //{
-        //    var tilesInPlay = new List<ScrabbleTile>();
+        public MovementDirection GetMovementDirection()
+        {
+            var tilesInPlay = new List<ScrabbleTile>();
 
-        //    for (int x = 0; x < ScrabbleForm.BOARD_WIDTH; x++)
-        //    {
-        //        for (int y = 0; y < ScrabbleForm.BOARD_HEIGHT; y++)
-        //        {
-        //            if (Tiles[x, y].TileInPlay)
-        //                tilesInPlay.Add(Tiles[x, y]);
-        //        }
-        //    }
+            for (int x = 0; x < ScrabbleForm.BOARD_WIDTH; x++)
+            {
+                for (int y = 0; y < ScrabbleForm.BOARD_HEIGHT; y++)
+                {
+                    if (Tiles[x, y].TileInPlay)
+                        tilesInPlay.Add(Tiles[x, y]);
+                }
+            }
 
-        //    // No direction because less than 2 tiles have been played
-        //    // Todo: What if you only play one tile but it does join up with something already on the board?
-        //    //       There is a movement direction involved there...
-        //    if (tilesInPlay.Count <= 1)
-        //        return MovementDirection.None;
+            // No direction because less than 2 tiles have been played
+            if (tilesInPlay.Count <= 1)
+                return MovementDirection.None;
 
-        //    int xChange = tilesInPlay[1].XLoc - tilesInPlay[0].XLoc;
-        //    int yChange = tilesInPlay[1].YLoc - tilesInPlay[0].YLoc;
+            int xChange = tilesInPlay[1].XLoc - tilesInPlay[0].XLoc;
+            int yChange = tilesInPlay[1].YLoc - tilesInPlay[0].YLoc;
 
-        //    return xChange > 0 ? MovementDirection.Across : yChange > 0 ? MovementDirection.Down : MovementDirection.None;
-        //}
+            return xChange > 0 ? MovementDirection.Across : yChange > 0 ? MovementDirection.Down : MovementDirection.None;
+        }
 
         /// <summary>
         /// Ensure that where the tiles have been placed on the board are valid locations.
@@ -139,38 +137,63 @@ namespace Scrabble.Core.Tile
                 }
             }
 
-            // Todo: need to ensure this still words when you have a gap in letters you have placed due to using existing letters on the board.
+            // Grab all the tiles in play in this turn.
+            for (int x = 0; x < ScrabbleForm.BOARD_WIDTH; x++)
+            {
+                for (int y = 0; y < ScrabbleForm.BOARD_HEIGHT; y++)
+                {
+                    if (Tiles[x, y].TileInPlay)
+                        tilesInPlay.Add(Tiles[x, y]);
+                }
+            }
 
-            //for (int x = 0; x < BOARD_WIDTH; x++)
-            //{
-            //    for (int y = 0; y < BOARD_HEIGHT; y++)
-            //    {
-            //        if (Tiles[x, y].TileInPlay)
-            //            tilesInPlay.Add(Tiles[x, y]);
-            //    }
-            //}
+            var direction = GetMovementDirection();
 
-            //// Only one tile in play so it's valid
-            //if (tilesInPlay.Count() <= 1)
-            //    return true;
+            // Only one tile in play and/or we aren't moving in any direction so the move should be valid.
+            if (direction == MovementDirection.None || tilesInPlay.Count() <= 1)
+                return true;
 
-            //for (int x = 1; x < tilesInPlay.Count; x++)
-            //{
-            //    int xChange = tilesInPlay[x - 1].XLoc - tilesInPlay[x].XLoc;
-            //    int yChange = tilesInPlay[x - 1].YLoc - tilesInPlay[x].YLoc;
+            // For every tile in play, ensure the player hasn't tried to move in two directions at once.
+            for (int x = 1; x < tilesInPlay.Count; x++)
+            {
+                int xChange = tilesInPlay[x - 1].XLoc - tilesInPlay[x].XLoc;
+                int yChange = tilesInPlay[x - 1].YLoc - tilesInPlay[x].YLoc;
 
-            //    // Moved too much in the X direction
-            //    if (xChange < -1 || xChange > 1)
-            //        return false;
+                if (direction == MovementDirection.Across)
+                {
+                    if (yChange != 0)
+                        return false;
+                }
 
-            //    // Moved too much in the Y direction
-            //    if (yChange < -1 || yChange > 1)
-            //        return false;
+                if (direction == MovementDirection.Down)
+                {
+                    if (xChange != 0)
+                        return false;
+                }
+            }
 
-            //    // Moved in both an X and Y direction
-            //    if (xChange != 0 && yChange != 0)
-            //        return false;
-            //}
+            int xLoc = tilesInPlay[0].XLoc;
+            int yLoc = tilesInPlay[0].YLoc;
+            int lastX = tilesInPlay[tilesInPlay.Count() - 1].XLoc;
+            int lastY = tilesInPlay[tilesInPlay.Count() - 1].YLoc;
+
+            // Ensure that there are no gaps inbetween the tile placements even in the same direction
+            if (direction == MovementDirection.Across)
+            {
+                for (int x = xLoc; x <= lastX; x++)
+                {
+                    if (!Tiles[x, yLoc].TileInPlay && string.IsNullOrEmpty(Tiles[x, yLoc].Text))
+                        return false;
+                }
+            }
+            if (direction == MovementDirection.Down)
+            {
+                for (int y = yLoc; y <= lastY; y++)
+                {
+                    if (!Tiles[xLoc, y].TileInPlay && string.IsNullOrEmpty(Tiles[xLoc, y].Text))
+                        return false;
+                }
+            }
 
             return true;
         }
