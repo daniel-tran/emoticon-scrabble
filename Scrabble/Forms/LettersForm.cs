@@ -28,11 +28,9 @@ namespace Scrabble.Forms
             table.Columns.Add("Remaining");
             table.Columns.Add("StartedWith");
 
-            string allChars = " !()*+-./038:;<=>@BCDFIJKLOPSTVX['\\]^_bcdnopqsuvw{|}~";
-            char[] chars = allChars.ToCharArray();
-            for (int i = 0; i < chars.Length; i++)
+            char[] chars = ScrabbleForm.TileManager.TileBag.GetLetterArray();
+            foreach (char x in chars)
             {
-                char x = chars[i];
                 var row = table.NewRow();
                 row["Letter"] = x;
                 row["Remaining"] = ScrabbleForm.TileManager.TileBag.Letters.Where(l => l == x).Count();

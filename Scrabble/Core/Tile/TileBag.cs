@@ -21,11 +21,9 @@ namespace Scrabble.Core
         public void SetupBag()
         {
             Letters = new List<char>();
-            string allChars = " !()*+-./038:;<=>@BCDFIJKLOPSTVX['\\]^_bcdnopqsuvw{|}~";
-            char[] chars = allChars.ToCharArray();
-            for (int i = 0; i < chars.Length; i++)
+            char[] chars = GetLetterArray();
+            foreach (char c in chars)
             {
-                char c = chars[i];
                 for (int x = 0; x < LetterCount(c); x++)
                 {
                     this.Letters.Add(c);
@@ -69,6 +67,15 @@ namespace Scrabble.Core
             }
 
             return letters;
+        }
+
+        /// <summary>
+        /// Returns a character array of all possible values that a tile could be.
+        /// </summary>
+        /// <returns></returns>
+        public char[] GetLetterArray()
+        {
+            return " !()*+-./038:;<=>@BCDFIJKLOPSTVX['\\]^_bcdnopqsuvw{|}~".ToCharArray();
         }
 
         /// <summary>
