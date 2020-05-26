@@ -78,6 +78,10 @@ namespace Scrabble.Core.Tile
             var tile = (RackTile) sender;
             var alreadySelected = tile.LetterSelected;
 
+            // Prevent the users from replaying an already played letter by selecting the blank
+            // tile where the tile used to be.
+            if (String.IsNullOrEmpty(tile.Text)) return;
+
             // Reset the selected display of all tiles.
             foreach (var t in ScrabbleForm.PlayerManager.CurrentPlayer.Tiles)
             {

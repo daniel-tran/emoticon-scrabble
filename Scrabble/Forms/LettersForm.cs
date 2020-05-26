@@ -28,7 +28,8 @@ namespace Scrabble.Forms
             table.Columns.Add("Remaining");
             table.Columns.Add("StartedWith");
 
-            for (var x = 'A'; x <= 'Z'; x++)
+            char[] chars = ScrabbleForm.TileManager.TileBag.GetLetterArray();
+            foreach (char x in chars)
             {
                 var row = table.NewRow();
                 row["Letter"] = x;

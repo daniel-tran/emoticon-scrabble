@@ -21,7 +21,8 @@ namespace Scrabble.Core
         public void SetupBag()
         {
             Letters = new List<char>();
-            for (char c = 'A'; c <= 'Z'; c++)
+            char[] chars = GetLetterArray();
+            foreach (char c in chars)
             {
                 for (int x = 0; x < LetterCount(c); x++)
                 {
@@ -69,6 +70,15 @@ namespace Scrabble.Core
         }
 
         /// <summary>
+        /// Returns a character array of all possible values that a tile could be.
+        /// </summary>
+        /// <returns></returns>
+        public char[] GetLetterArray()
+        {
+            return " !()*+-./038:;<=>@BCDFIJKLOPSTVX['\\]^_bcdnopqsuvw{|}~".ToCharArray();
+        }
+
+        /// <summary>
         /// How many times times a provided character appear in the tile bag
         /// at the start of a game?
         /// </summary>
@@ -78,13 +88,59 @@ namespace Scrabble.Core
         {
             var timesMapping = new Dictionary<char, int>()
             {
-                { 'E', 13 }, { 'A', 9 }, { 'I', 8 }, { 'O', 8 },
-                { 'N', 5 }, { 'R', 6 }, { 'T', 7 }, { 'L', 4  },
-                { 'S', 5 }, { 'U', 4 }, { 'D', 5 }, { 'G', 3 },
-                { 'B', 2 }, { 'C', 2 }, { 'M', 2 }, { 'P', 2 },
-                { 'F', 2 }, { 'H', 4 }, { 'V', 2 }, { 'W', 2 },
-                { 'Y', 2 }, { 'K', 1 }, { 'J', 1 }, { 'X', 1 },
-                { 'Q', 1 }, { 'Z', 1 },
+                { ':' , 5 } ,
+                { '=' , 5 } ,
+                { 'X' , 5 } ,
+                { '8' , 5 } ,
+                { ';' , 5 } ,
+                { 'B' , 5 } ,
+                { 'O' , 2 } ,
+                { '0' , 2 } ,
+                { 'o' , 2 } ,
+                { 'D' , 2 } ,
+                { 'C' , 2 } ,
+                { 'c' , 2 } ,
+                { 'T' , 2 } ,
+                { 'K' , 2 } ,
+                { 'S' , 2 } ,
+                { 's' , 2 } ,
+                { 'I' , 2 } ,
+                { 'v' , 2 } ,
+                { 'V' , 2 } ,
+                { 'L' , 2 } ,
+                { '<' , 2 } ,
+                { '(' , 2 } ,
+                { '>' , 2 } ,
+                { ')' , 2 } ,
+                { '{' , 2 } ,
+                { '}' , 2 } ,
+                { ']' , 2 } ,
+                { '[' , 2 } ,
+                { '/' , 2 } ,
+                { '\\' , 2 } ,
+                { '|' , 2 } ,
+                { '*' , 2 } ,
+                { 'P' , 2 } ,
+                { 'p' , 2 } ,
+                { 'F' , 2 } ,
+                { 'J' , 2 } ,
+                { 'b' , 2 } ,
+                { '3' , 2 } ,
+                { 'd' , 2 } ,
+                { 'q' , 2 } ,
+                { '-' , 3 } ,
+                { '^' , 3 } ,
+                { ' ' , 3 } ,
+                { '+' , 2 } ,
+                { '\'' , 2 } ,
+                { '.' , 2 } ,
+                { '@' , 2 } ,
+                { '~' , 2 } ,
+                { 'u' , 2 } ,
+                { '_' , 2 } ,
+                { '!' , 2 } ,
+                { 'n' , 2 } ,
+                { 'w' , 2 } ,
             };
 
             return timesMapping[c];
